@@ -3,3 +3,6 @@ include 'springtx'
 include 'Querydsl'
 include 'jdbc'
 include 'jpashop'
+include 'jpabasic'
+include 'dd'
+
