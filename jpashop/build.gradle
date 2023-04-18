@@ -25,6 +25,12 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
+    //JUnit4 추가
+    testImplementation("org.junit.vintage:junit-vintage-engine") {
+        exclude group: "org.hamcrest", module: "hamcrest-core"
+    }
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
 }
 test {
     useJUnitPlatform()
