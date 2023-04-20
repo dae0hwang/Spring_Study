@@ -1,4 +1,5 @@
 package study.querydsl.repository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import study.querydsl.entity.Team;
 import javax.persistence.EntityManager;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+
 @SpringBootTest
 @Transactional
 @Commit
@@ -57,6 +60,52 @@ class MemberRepositoryTest {
         assertThat(result).extracting("username").containsExactly("member4");
     }
 
+
+    @Test
+    public void projections() throws Exception {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+        em.flush();
+        em.clear();
+        //when
+        List<UsernameOnly> result =
+            memberRepository.findProjectionsByUsername("m1");
+        for (UsernameOnly usernameOnly : result) {
+            //해당 이름을 보고 값을 넣어준다. 맞춰야 한다.
+            System.out.println(usernameOnly.getUsername());
+
+        }
+        //then
+        Assertions.assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void projections2() throws Exception {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+        em.persist(m1);
+        em.persist(m2);
+        em.flush();
+        em.clear();
+
+        //when
+        List<UsernameOnlyDto> result =
+            memberRepository.findProjectionsByUsername2("m1");
+        for (UsernameOnlyDto usernameOnly : result) {
+            //해당 이름을 보고 값을 넣어준다. 맞춰야 한다.
+            System.out.println(usernameOnly.getUsername());
+        }
+        //then
+        Assertions.assertThat(result.size()).isEqualTo(1);
+    }
 
 
 }
