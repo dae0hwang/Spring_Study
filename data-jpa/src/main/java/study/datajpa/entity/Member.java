@@ -22,7 +22,7 @@ import lombok.ToString;
     name="Member.findByUsername",
     query="select m from Member m where m.username = :username")
 @ToString(of = {"id", "username", "age"})
-public class Member {
+public class Member extends BaseEntity{
 
     @Id
     @GeneratedValue

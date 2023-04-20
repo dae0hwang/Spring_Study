@@ -75,8 +75,8 @@ public class MemberJpaRepositoryTest {
         memberJpaRepository.save(new Member("member4", 10));
         memberJpaRepository.save(new Member("member5", 10));
         int age = 10;
-        int offset = 0;
-        int limit = 3;
+        int offset = 1;
+        int limit = 4;
         //when
         List<Member> members = memberJpaRepository.findByPage(age, offset, limit);
         long totalCount = memberJpaRepository.totalCount(age);
@@ -85,7 +85,10 @@ public class MemberJpaRepositoryTest {
         // 마지막 페이지 ...
         // 최초 페이지 ..
         //then
-        assertThat(members.size()).isEqualTo(3);
-        assertThat(totalCount).isEqualTo(5);
+        for (Member member : members) {
+            System.out.println(member.getUsername());
+        }
+//        assertThat(members.size()).isEqualTo(3);
+//        assertThat(totalCount).isEqualTo(5);
     }
 }

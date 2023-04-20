@@ -8,8 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
@@ -170,6 +172,121 @@ public class MemberRepositoryTest {
             System.out.println("name:: "+name);
 
         }
+    }
+
+    @Test
+    void userTest() {
+        memberRepository.save(new Member("1", 11, null));
+        memberRepository.save(new Member("2", 22, null));
+
+        List<Member> memberCustom = memberRepository.findMemberCustom();
+        assertThat(memberCustom.size()).isEqualTo(2);
+    }
+
+    @Test
+    @Rollback(value = false)
+    void auditing() {
+        memberRepository.save(new Member("memberName", 11, null));
+
+    }
+
+    //페이징
+    //페이징 조건과 정렬 조건 설정
+    @Test
+    public void page() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+        //when
+        //해당 페이지, 페이지 갯수, 그리고 소팅조건 페이지 0부터 시작  정렬은 해도 되고 안해도된다.
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC,
+            "username"));
+        Page<Member> page = memberRepository.findByAge(10, pageRequest);
+        //then
+        List<Member> content = page.getContent(); //조회된 데이터
+        assertThat(content.size()).isEqualTo(3); //조회된 데이터 수
+        assertThat(page.getTotalElements()).isEqualTo(5); //전체 데이터 수
+        assertThat(page.getNumber()).isEqualTo(0); //페이지 번호
+        assertThat(page.getTotalPages()).isEqualTo(2); //전체 페이지 번호
+        assertThat(page.isFirst()).isTrue(); //첫번째 항목인가?
+        assertThat(page.hasNext()).isTrue(); //다음 페이지가 있는가?
+    }
+
+    @Test
+    public void slice() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+        //when
+        //해당 페이지, 페이지 갯수, 그리고 소팅조건 페이지 0부터 시작  정렬은 해도 되고 안해도된다.
+        PageRequest pageRequest = PageRequest.of(0, 6, Sort.by(Sort.Direction.DESC,
+            "username"));
+        Slice<Member> page = memberRepository.findSliceByAge(10, pageRequest);
+        //then
+        List<Member> content = page.getContent(); //조회된 데이터
+        assertThat(content.size()).isEqualTo(5); //조회된 데이터 수
+//        assertThat(page.getTotalElements()).isEqualTo(5); //전체 데이터 수
+        assertThat(page.getNumber()).isEqualTo(0); //페이지 번호
+//        assertThat(page.getTotalPages()).isEqualTo(2); //전체 페이지 번호
+        assertThat(page.isFirst()).isTrue(); //첫번째 항목인가?
+//        assertThat(page.hasNext()).isTrue(); //다음 페이지가 있는가?
+    }
+
+
+    @Test
+    public void list() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+        //when
+        //해당 페이지, 페이지 갯수, 그리고 소팅조건 페이지 0부터 시작  정렬은 해도 되고 안해도된다.
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC,
+            "username"));
+        List<Member> list = memberRepository.findListByAge(10, pageRequest);
+        //then
+//        List<Member> content = page.getContent(); //조회된 데이터
+//        assertThat(content.size()).isEqualTo(3); //조회된 데이터 수
+//        assertThat(page.getTotalElements()).isEqualTo(5); //전체 데이터 수
+//        assertThat(page.getNumber()).isEqualTo(0); //페이지 번호
+//        assertThat(page.getTotalPages()).isEqualTo(2); //전체 페이지 번호
+//        assertThat(page.isFirst()).isTrue(); //첫번째 항목인가?
+//        assertThat(page.hasNext()).isTrue(); //다음 페이지가 있는가?
+
+        assertThat(list.size()).isEqualTo(3); //조회된 데이터 수
+    }
+
+    @Test
+    public void toptest() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 10));
+        memberRepository.save(new Member("member3", 10));
+        memberRepository.save(new Member("member4", 10));
+        memberRepository.save(new Member("member5", 10));
+        //when
+        //해당 페이지, 페이지 갯수, 그리고 소팅조건 페이지 0부터 시작  정렬은 해도 되고 안해도된다.
+//        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC,
+//            "username"));
+        List<Member> members = memberRepository.findTop2ByAge(10);
+        //then
+//        List<Member> content = page.getContent(); //조회된 데이터
+//        assertThat(content.size()).isEqualTo(3); //조회된 데이터 수
+//        assertThat(page.getTotalElements()).isEqualTo(5); //전체 데이터 수
+//        assertThat(page.getNumber()).isEqualTo(0); //페이지 번호
+//        assertThat(page.getTotalPages()).isEqualTo(2); //전체 페이지 번호
+//        assertThat(page.isFirst()).isTrue(); //첫번째 항목인가?
+//        assertThat(page.hasNext()).isTrue(); //다음 페이지가 있는가?
+
+        System.out.println("size ="+members.size() );
     }
 
 }

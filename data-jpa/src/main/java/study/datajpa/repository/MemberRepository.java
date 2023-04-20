@@ -6,6 +6,7 @@ import java.util.function.Function;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,7 +15,7 @@ import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuer
 import org.springframework.data.repository.query.Param;
 import study.datajpa.entity.Member;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom{
 
     List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
 
@@ -29,7 +30,17 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<MemberDto> findMemberDto();
 
     //페이징
+    @Query(value = "select m from Member m",
+        countQuery = "select count(m.username) from Member m")
+    Page<Member> findMemberAllCountBy(Pageable pageable);
+
     Page<Member> findByAge(int age, Pageable pageable);
+
+    //슬라이스
+    Slice<Member> findSliceByAge(int age, Pageable pageable);
+
+    //리스트
+    List<Member> findListByAge(int age, Pageable pageable);
 
     //벌크성
     @Modifying
@@ -47,4 +58,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     //메서드 이름으로 쿼리에서 특히 편리하다.
     @EntityGraph(attributePaths = {"team"})
     List<Member> findByUsername(String username);
+
+    List<Member> findTop2ByAge(int age);
+
 }

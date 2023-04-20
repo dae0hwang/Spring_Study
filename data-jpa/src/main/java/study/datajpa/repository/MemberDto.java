@@ -1,6 +1,7 @@
 package study.datajpa.repository;
 
 import lombok.Data;
+import study.datajpa.entity.BaseEntity;
 
 @Data
 public class MemberDto {
